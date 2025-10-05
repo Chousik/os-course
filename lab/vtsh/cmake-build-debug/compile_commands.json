@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -I/Users/chousik/CLionProjects/os-course/lab/vtsh/bin/. -I/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/. -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o bin/CMakeFiles/vtsh.dir/main.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/bin/main.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/bin/main.c",
+  "output": "bin/CMakeFiles/vtsh.dir/main.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -I/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/. -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o lib/CMakeFiles/libvtsh.dir/vtsh.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/lib/vtsh.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/vtsh.c",
+  "output": "lib/CMakeFiles/libvtsh.dir/vtsh.c.o"
+}
+]
