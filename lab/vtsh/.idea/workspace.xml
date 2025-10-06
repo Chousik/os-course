@@ -85,7 +85,7 @@
       <recent name="$PROJECT_DIR$/build/bin" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_redirection.TestShellRedirection">
+  <component name="RunManager" selected="Python tests.Python tests for test_basics.TestShellBasics">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
@@ -205,8 +205,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
+        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
         <item itemvalue="Python tests.Python tests for base_test.BaseShellTest" />
@@ -221,7 +221,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1759698233545</updated>
-      <workItem from="1759698234636" duration="11133000" />
+      <workItem from="1759698234636" duration="11556000" />
     </task>
     <servers />
   </component>

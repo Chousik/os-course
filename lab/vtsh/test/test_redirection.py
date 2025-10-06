@@ -2,7 +2,7 @@ import unittest
 
 from base_test import BaseShellTest
 
-REQUIRED_REDIRECTION_FUNCTIONALITY = True
+REQUIRED_REDIRECTION_FUNCTIONALITY = Falsegit
 
 @unittest.skipIf(not REQUIRED_REDIRECTION_FUNCTIONALITY,
                  ("Redirection functionality is not required in the task. "
