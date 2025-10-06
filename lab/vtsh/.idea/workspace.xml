@@ -14,7 +14,10 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="vtsh" targetName="loader_cpu_dedup" />
+      <config projectName="vtsh" targetName="loader_ema_replace_str" />
       <config projectName="vtsh" targetName="libvtsh" />
+      <config projectName="vtsh" targetName="loader_io_rw" />
       <config projectName="vtsh" targetName="vtsh" />
     </generated>
   </component>
@@ -82,13 +85,28 @@
       <recent name="$PROJECT_DIR$/build/bin" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction">
+  <component name="RunManager" selected="Python tests.Python tests for test_redirection.TestShellRedirection">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
     <configuration name="libvtsh" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtsh" TARGET_NAME="libvtsh" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="loader_cpu_dedup" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtsh" TARGET_NAME="loader_cpu_dedup" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtsh" RUN_TARGET_NAME="loader_cpu_dedup">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="loader_ema_replace_str" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtsh" TARGET_NAME="loader_ema_replace_str" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtsh" RUN_TARGET_NAME="loader_ema_replace_str">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="loader_io_rw" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtsh" TARGET_NAME="loader_io_rw" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtsh" RUN_TARGET_NAME="loader_io_rw">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -176,6 +194,9 @@
     <list>
       <item itemvalue="CMake Application.vtsh" />
       <item itemvalue="CMake Application.libvtsh" />
+      <item itemvalue="CMake Application.loader_cpu_dedup" />
+      <item itemvalue="CMake Application.loader_ema_replace_str" />
+      <item itemvalue="CMake Application.loader_io_rw" />
       <item itemvalue="Python tests.Python tests for base_test.BaseShellTest" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
@@ -184,11 +205,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
+        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
+        <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
         <item itemvalue="Python tests.Python tests for base_test.BaseShellTest" />
-        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
       </list>
     </recent_temporary>
   </component>
@@ -200,7 +221,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1759698233545</updated>
-      <workItem from="1759698234636" duration="5479000" />
+      <workItem from="1759698234636" duration="11133000" />
     </task>
     <servers />
   </component>
@@ -211,16 +232,5 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/test/test_basics.py</url>
-          <line>5</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

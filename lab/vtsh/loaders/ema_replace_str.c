@@ -1,3 +1,8 @@
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 200809L
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -63,6 +68,26 @@ static uint32_t rng_next(uint64_t *state) {
     return (uint32_t)z;
 }
 
+static bool write_full(int fd, const char *buffer, size_t total) {
+    size_t written_total = 0;
+    while (written_total < total) {
+        ssize_t written = write(fd, buffer + written_total, total - written_total);
+        if (written < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            perror("write");
+            return false;
+        }
+        if (written == 0) {
+            fprintf(stderr, "Short write: disk full or unavailable.\n");
+            return false;
+        }
+        written_total += (size_t)written;
+    }
+    return true;
+}
+
 static int generate_file(const struct options *opts, size_t needle_len) {
     int fd = open(opts->file_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd < 0) {
@@ -97,15 +122,13 @@ static int generate_file(const struct options *opts, size_t needle_len) {
             memcpy(buffer + pos, opts->needle, needle_len);
         }
 
-        ssize_t written = write(fd, buffer, chunk);
-        if (written < 0) {
-            perror("write");
+        if (!write_full(fd, buffer, chunk)) {
             free(buffer);
             close(fd);
             return -1;
         }
-        remaining -= (size_t)written;
-        total_written += (size_t)written;
+        remaining -= chunk;
+        total_written += chunk;
     }
 
     if (opts->do_fsync) {
@@ -136,7 +159,10 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
     size_t replacements = 0;
 
     for (;;) {
-        ssize_t rd = pread(fd, buffer + tail, buffer_size, offset);
+        ssize_t rd = 0;
+        do {
+            rd = pread(fd, buffer + tail, buffer_size, offset);
+        } while (rd < 0 && errno == EINTR);
         if (rd < 0) {
             perror("pread");
             break;
@@ -152,11 +178,26 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
         for (size_t pos = 0; pos < limit; ++pos) {
             if (buffer[pos] == opts->needle[0] && memcmp(buffer + pos, opts->needle, needle_len) == 0) {
                 off_t target = base_offset + (off_t)pos;
-                ssize_t wr = pwrite(fd, opts->replacement, needle_len, target);
-                if (wr < 0) {
-                    perror("pwrite");
-                    free(buffer);
-                    return replacements;
+                size_t total_written = 0;
+                while (total_written < needle_len) {
+                    ssize_t wr = pwrite(fd,
+                                        opts->replacement + total_written,
+                                        needle_len - total_written,
+                                        target + (off_t)total_written);
+                    if (wr < 0) {
+                        if (errno == EINTR) {
+                            continue;
+                        }
+                        perror("pwrite");
+                        free(buffer);
+                        return replacements;
+                    }
+                    if (wr == 0) {
+                        fprintf(stderr, "Short write while replacing.\n");
+                        free(buffer);
+                        return replacements;
+                    }
+                    total_written += (size_t)wr;
                 }
                 replacements++;
             }

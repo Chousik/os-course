@@ -1,515 +1,719 @@
 #include "vtsh.h"
 
+#include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define MAX_ARGS 32
-#define MAX_CMD_LENGTH 100
-#define MAX_TOKENS 64
-#define FORK_ERROR "fork error"
-#define PIPE_ERROR "Pipe creation failed"
-#define DUP2_STDIN_ERROR "dup2(stdin) failed"
-#define DUP2_STDOUT_ERROR "dup2(stdout) failed"
+enum {
+  kMaxArgs = 32,
+  kMaxCommandLength = 256,
+  kMaxPipelineSegments = 16
+};
 
-static const char *SELF_PATH = NULL;
+static const mode_t kDefaultFileMode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+static const int kCommandNotFoundCode = 127;
+static const char kPrompt[] = "vtsh> ";
+static const char kSyntaxErrorMessage[] = "Syntax error\n";
+static const char kIoErrorMessage[] = "I/O error\n";
+static const char kCommandNotFoundMessage[] = "Command not found\n";
 
-const char* vtsh_prompt(void) {
-    return "vtsh> ";
+typedef enum {
+  kParseOk,
+  kParseSyntaxError
+} ParseStatus;
+
+typedef struct {
+  char data[kMaxCommandLength];
+  size_t size;
+} CommandStorage;
+
+typedef struct {
+  char *argv[kMaxArgs];
+  size_t argc;
+  char *input_path;
+  char *output_path;
+} Command;
+
+typedef struct {
+  int input_fd;
+  int output_fd;
+  bool has_input;
+  bool has_output;
+} RedirectionFds;
+
+typedef struct {
+  const char *self_path;
+} ShellContext;
+
+const char *vtsh_prompt(void) {
+  return kPrompt;
 }
 
-static void trim_spaces(char *s) {
-    if (!s) {
-        return;
-    }
-
-    char *p = s;
-    while (*p == ' ' || *p == '\t' || *p == '\n') {
-        ++p;
-    }
-
-    if (p != s) {
-        memmove(s, p, strlen(p) + 1);
-    }
-
-    size_t len = strlen(s);
-    while (len && (s[len - 1] == ' ' || s[len - 1] == '\t' || s[len - 1] == '\n')) {
-        s[--len] = '\0';
-    }
-}
-
-static int count_pipes(const char *s) {
-    int c = 0;
-    for (const char *p = s; *p; ++p) {
-        if (*p == '|') {
-            ++c;
-        }
-    }
-    return c;
+static void write_message(const char *message) {
+  size_t length = strlen(message);
+  ssize_t wrote = write(STDOUT_FILENO, message, length);
+  if (wrote < 0) {
+    const char warn_message[] = "\n";
+    (void)write(STDERR_FILENO, warn_message, sizeof(warn_message) - 1U);
+  }
 }
 
 static void report_syntax_error(void) {
-    fprintf(stdout, "Syntax error\n");
-    fflush(stdout);
+  write_message(kSyntaxErrorMessage);
 }
 
 static void report_io_error(void) {
-    fprintf(stdout, "I/O error\n");
-    fflush(stdout);
+  write_message(kIoErrorMessage);
 }
 
-static int tokenize_command(const char *command, char *tokens[], int max_tokens) {
-    static char storage[MAX_TOKENS][MAX_CMD_LENGTH];
+static void trim_whitespace(char *text) {
+  if (text == NULL) {
+    return;
+  }
 
-    int count = 0;
-    size_t idx = 0;
+  size_t length = strlen(text);
+  size_t front = 0U;
+  while (front < length && isspace((unsigned char)text[front]) != 0) {
+    ++front;
+  }
 
-    while (command[idx] != '\0') {
-        while (command[idx] == ' ' || command[idx] == '\t' || command[idx] == '\n') {
-            ++idx;
-        }
+  size_t back = length;
+  while (back > front && isspace((unsigned char)text[back - 1U]) != 0) {
+    --back;
+  }
 
-        if (command[idx] == '\0') {
-            break;
-        }
-
-        if (count >= max_tokens) {
-            return -1;
-        }
-
-        size_t len = 0;
-        if (command[idx] == '<' || command[idx] == '>') {
-            char op = command[idx];
-            storage[count][len++] = command[idx++];
-
-            while (command[idx] != '\0') {
-                char ch = command[idx];
-                if (ch == ' ' || ch == '\t' || ch == '\n') {
-                    break;
-                }
-                if ((ch == '<' || ch == '>') && op == storage[count][0]) {
-                    break;
-                }
-                if (len < MAX_CMD_LENGTH - 1) {
-                    storage[count][len++] = ch;
-                }
-                ++idx;
-            }
-        } else {
-            while (command[idx] != '\0' && command[idx] != ' ' && command[idx] != '\t' && command[idx] != '\n') {
-                if (command[idx] == '<') {
-                    size_t lookahead = idx + 1;
-                    int has_gt = 0;
-                    while (command[lookahead] != '\0' && command[lookahead] != ' ' && command[lookahead] != '\t' && command[lookahead] != '\n') {
-                        if (command[lookahead] == '>') {
-                            has_gt = 1;
-                            break;
-                        }
-                        ++lookahead;
-                    }
-                    if (!has_gt) {
-                        break;
-                    }
-                }
-                if (len < MAX_CMD_LENGTH - 1) {
-                    storage[count][len++] = command[idx];
-                }
-                ++idx;
-            }
-        }
-
-        storage[count][len] = '\0';
-        tokens[count] = storage[count];
-        ++count;
-    }
-
-    tokens[count] = NULL;
-    return count;
+  if (front > 0U) {
+    memmove(text, text + front, back - front);
+  }
+  text[back - front] = '\0';
 }
 
-static int prepare_arguments(const char *command,
-                             char *args[],
-                             int *argc,
-                             int *in_fd,
-                             int *out_fd) {
-    char *tokens[MAX_TOKENS + 1];
-    int token_count = tokenize_command(command, tokens, MAX_TOKENS);
+static bool store_span(CommandStorage *storage,
+                       const char *start,
+                       size_t length,
+                       char **out_text) {
+  if (storage == NULL || out_text == NULL || start == NULL) {
+    return false;
+  }
 
-    *argc = 0;
-    *in_fd = -1;
-    *out_fd = -1;
+  if (length == 0U) {
+    return false;
+  }
 
-    if (token_count < 0) {
-        report_syntax_error();
-        return -1;
-    }
+  if (storage->size + length + 1U > sizeof(storage->data)) {
+    return false;
+  }
 
-    int consumed[MAX_TOKENS] = {0};
-    char *redir_paths[2] = {NULL, NULL};
-
-    for (int i = 0; i < token_count; ++i) {
-        if (i < MAX_TOKENS && consumed[i]) {
-            continue;
-        }
-
-        char *tok = tokens[i];
-        if (!tok || tok[0] == '\0') {
-            continue;
-        }
-
-        if (tok[0] == '<' || tok[0] == '>') {
-            int is_input = (tok[0] == '<');
-
-            if (tok[1] == '<' || tok[1] == '>') {
-                report_syntax_error();
-                return -1;
-            }
-
-            char *filename = NULL;
-            if (tok[1] != '\0') {
-                filename = tok + 1;
-            } else {
-                if (i + 1 >= token_count) {
-                    report_syntax_error();
-                    return -1;
-                }
-                if (!tokens[i + 1] || tokens[i + 1][0] == '\0' || tokens[i + 1][0] == '<' || tokens[i + 1][0] == '>') {
-                    report_syntax_error();
-                    return -1;
-                }
-                filename = tokens[i + 1];
-                consumed[i + 1] = 1;
-            }
-
-            if (!filename || filename[0] == '\0') {
-                report_syntax_error();
-                return -1;
-            }
-
-            int slot = is_input ? 0 : 1;
-            if (redir_paths[slot] != NULL) {
-                report_syntax_error();
-                return -1;
-            }
-
-            consumed[i] = 1;
-            redir_paths[slot] = filename;
-        }
-    }
-
-    int local_in = -1;
-    int local_out = -1;
-
-    if (redir_paths[0]) {
-        local_in = open(redir_paths[0], O_RDONLY);
-        if (local_in < 0) {
-            report_io_error();
-            return -2;
-        }
-    }
-
-    if (redir_paths[1]) {
-        local_out = open(redir_paths[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (local_out < 0) {
-            report_io_error();
-            if (local_in != -1) {
-                close(local_in);
-            }
-            return -2;
-        }
-    }
-
-    int local_argc = 0;
-    for (int i = 0; i < token_count; ++i) {
-        if (consumed[i]) {
-            continue;
-        }
-        char *tok = tokens[i];
-        if (!tok || tok[0] == '\0') {
-            continue;
-        }
-        if (tok[0] == '<' || tok[0] == '>') {
-            continue;
-        }
-        if (local_argc < MAX_ARGS - 1) {
-            args[local_argc++] = tok;
-        }
-    }
-
-    args[local_argc] = NULL;
-    *argc = local_argc;
-    *in_fd = local_in;
-    *out_fd = local_out;
-    return 0;
+  memcpy(storage->data + storage->size, start, length);
+  storage->data[storage->size + length] = '\0';
+  *out_text = storage->data + storage->size;
+  storage->size += length + 1U;
+  return true;
 }
 
-static void execute(char *args[], int in_fd, int out_fd, int wait_child) {
-    if (args[0] && strcmp(args[0], "./shell") == 0 && SELF_PATH) {
-        args[0] = (char *)SELF_PATH;
-    }
-
-    pid_t pid = fork();
-    if (pid > 0) {
-        if (wait_child) {
-            wait(NULL);
-        }
-        return;
-    } else if (pid == 0) {
-        if (in_fd != -1 && in_fd != STDIN_FILENO) {
-            if (dup2(in_fd, STDIN_FILENO) == -1) {
-                perror(DUP2_STDIN_ERROR);
-                _exit(1);
-            }
-        }
-        if (out_fd != -1 && out_fd != STDOUT_FILENO) {
-            if (dup2(out_fd, STDOUT_FILENO) == -1) {
-                perror(DUP2_STDOUT_ERROR);
-                _exit(1);
-            }
-        }
-        execvp(args[0], args);
-        fprintf(stdout, "Command not found\n");
-        fflush(stdout);
-        _exit(127);
-    } else {
-        perror(FORK_ERROR);
-        exit(1);
-    }
+static void reset_command(Command *command, CommandStorage *storage) {
+  storage->size = 0U;
+  command->argc = 0U;
+  command->input_path = NULL;
+  command->output_path = NULL;
+  for (size_t index = 0U; index < kMaxArgs; ++index) {
+    command->argv[index] = NULL;
+  }
 }
 
-static void execute_piped(char *buf, int num_commands) {
-    if (!buf || num_commands <= 0) {
-        return;
+static ParseStatus parse_command_text(const char *text,
+                                      Command *command,
+                                      CommandStorage *storage) {
+  if (text == NULL || command == NULL || storage == NULL) {
+    return kParseSyntaxError;
+  }
+
+  reset_command(command, storage);
+
+  size_t length = strlen(text);
+  size_t position = 0U;
+
+  while (position < length) {
+    while (position < length && isspace((unsigned char)text[position]) != 0) {
+      ++position;
     }
 
-    char *cmds[num_commands];
-    int n = 0;
-    char *saveptr = NULL;
-    char *tok = strtok_r(buf, "|", &saveptr);
-    while (tok && n < num_commands) {
-        while (*tok == ' ' || *tok == '\t' || *tok == '\n') {
-            ++tok;
-        }
-        char *end = tok + strlen(tok);
-        while (end > tok && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\n')) {
-            --end;
-        }
-        *end = '\0';
-        if (*tok) {
-            cmds[n++] = tok;
-        }
-        tok = strtok_r(NULL, "|", &saveptr);
-    }
-    num_commands = n;
-    if (num_commands == 0) {
-        return;
+    if (position >= length) {
+      break;
     }
 
-    int pipes_count = (num_commands > 1) ? (num_commands - 1) : 0;
-    int (*fd)[2] = NULL;
-    if (pipes_count > 0) {
-        fd = calloc((size_t)pipes_count, sizeof(int[2]));
-        if (!fd) {
-            perror("calloc");
-            return;
+    char symbol = text[position];
+    if (symbol == '<' || symbol == '>') {
+      bool is_input = (symbol == '<');
+      ++position;
+
+      while (position < length && isspace((unsigned char)text[position]) != 0) {
+        ++position;
+      }
+
+      if (position >= length || text[position] == '<' || text[position] == '>') {
+        return kParseSyntaxError;
+      }
+
+      size_t path_start = position;
+      while (position < length) {
+        char path_symbol = text[position];
+        if (isspace((unsigned char)path_symbol) != 0 || path_symbol == '<' || path_symbol == '>') {
+          break;
         }
-        for (int i = 0; i < pipes_count; ++i) {
-            if (pipe(fd[i]) == -1) {
-                perror(PIPE_ERROR);
-                for (int k = 0; k < i; ++k) {
-                    close(fd[k][0]);
-                    close(fd[k][1]);
-                }
-                free(fd);
-                return;
-            }
-            fcntl(fd[i][0], F_SETFD, fcntl(fd[i][0], F_GETFD) | FD_CLOEXEC);
-            fcntl(fd[i][1], F_SETFD, fcntl(fd[i][1], F_GETFD) | FD_CLOEXEC);
+        ++position;
+      }
+
+      size_t path_length = position - path_start;
+      char *path_text = NULL;
+      if (!store_span(storage, text + path_start, path_length, &path_text)) {
+        return kParseSyntaxError;
+      }
+
+      if (is_input) {
+        if (command->input_path != NULL) {
+          return kParseSyntaxError;
         }
+        command->input_path = path_text;
+      } else {
+        if (command->output_path != NULL) {
+          return kParseSyntaxError;
+        }
+        command->output_path = path_text;
+      }
+      continue;
     }
 
-    int started = 0;
-    int error = 0;
-
-    for (int i = 0; i < num_commands; ++i) {
-        char tmp[MAX_CMD_LENGTH];
-        strncpy(tmp, cmds[i], sizeof(tmp) - 1);
-        tmp[sizeof(tmp) - 1] = '\0';
-
-        char *argvv[MAX_ARGS];
-        int argc = 0;
-        int redir_in = -1;
-        int redir_out = -1;
-
-        int prep = prepare_arguments(tmp, argvv, &argc, &redir_in, &redir_out);
-        if (prep != 0) {
-            error = 1;
-            break;
-        }
-
-        if (argc == 0) {
-            if (redir_in != -1) {
-                close(redir_in);
-            }
-            if (redir_out != -1) {
-                close(redir_out);
-            }
-            continue;
-        }
-
-        int base_in = (i == 0) ? STDIN_FILENO : fd[i - 1][0];
-        int base_out = (i == num_commands - 1) ? STDOUT_FILENO : fd[i][1];
-
-        int in_fd = (redir_in != -1) ? redir_in : base_in;
-        int out_fd = (redir_out != -1) ? redir_out : base_out;
-
-        execute(argvv, in_fd, out_fd, 0);
-        ++started;
-
-        if (redir_in != -1 && redir_in != base_in) {
-            close(redir_in);
-        }
-        if (redir_out != -1 && redir_out != base_out) {
-            close(redir_out);
-        }
+    size_t token_start = position;
+    while (position < length) {
+      char token_symbol = text[position];
+      if (isspace((unsigned char)token_symbol) != 0 || token_symbol == '<' || token_symbol == '>') {
+        break;
+      }
+      ++position;
     }
 
-    if (pipes_count > 0) {
-        for (int i = 0; i < pipes_count; ++i) {
-            close(fd[i][0]);
-            close(fd[i][1]);
-        }
+    size_t token_length = position - token_start;
+    if (token_length == 0U) {
+      continue;
     }
 
-    for (int i = 0; i < started; ++i) {
-        int status;
-        (void)wait(&status);
+    if (command->argc >= (kMaxArgs - 1U)) {
+      return kParseSyntaxError;
     }
 
-    free(fd);
-
-    if (error) {
-        return;
+    char *argument = NULL;
+    if (!store_span(storage, text + token_start, token_length, &argument)) {
+      return kParseSyntaxError;
     }
+
+    command->argv[command->argc] = argument;
+    ++command->argc;
+  }
+
+  command->argv[command->argc] = NULL;
+  return kParseOk;
 }
 
-static void run_chain(char *chain) {
-    trim_spaces(chain);
-    if (*chain == '\0') {
-        return;
+static bool split_commands(const char *line,
+                           char commands[][kMaxCommandLength],
+                           size_t *command_count,
+                           size_t max_commands,
+                           char separator) {
+  if (command_count == NULL || commands == NULL || line == NULL) {
+    return false;
+  }
+
+  size_t length = strlen(line);
+  size_t start = 0U;
+  size_t count = 0U;
+
+  for (size_t index = 0U; index <= length; ++index) {
+    bool at_end = (index == length);
+    bool at_separator = (!at_end && line[index] == separator);
+    if (!at_end && !at_separator) {
+      continue;
     }
 
-    int pipes_num = count_pipes(chain);
-
-    if (pipes_num == 0) {
-        char line[MAX_CMD_LENGTH];
-        strncpy(line, chain, sizeof(line) - 1);
-        line[sizeof(line) - 1] = '\0';
-
-        char *args[MAX_ARGS];
-        int argc = 0;
-        int redir_in = -1;
-        int redir_out = -1;
-
-        int prep = prepare_arguments(line, args, &argc, &redir_in, &redir_out);
-        if (prep != 0) {
-            return;
-        }
-
-        if (argc == 0) {
-            if (redir_in != -1) {
-                close(redir_in);
-            }
-            if (redir_out != -1) {
-                close(redir_out);
-            }
-            return;
-        }
-
-        if (strcmp(args[0], "cd") == 0) {
-            if (redir_in != -1) {
-                close(redir_in);
-            }
-            if (redir_out != -1) {
-                close(redir_out);
-            }
-
-            if (!args[1] || strcmp(args[1], ".") == 0) {
-                return;
-            }
-            if (strcmp(args[1], "..") == 0) {
-                if (chdir("..") != 0) {
-                    perror("cd");
-                }
-            } else {
-                if (chdir(args[1]) != 0) {
-                    perror("cd");
-                }
-            }
-            return;
-        }
-
-        int in_fd = (redir_in != -1) ? redir_in : STDIN_FILENO;
-        int out_fd = (redir_out != -1) ? redir_out : STDOUT_FILENO;
-
-        execute(args, in_fd, out_fd, 1);
-
-        if (redir_in != -1) {
-            close(redir_in);
-        }
-        if (redir_out != -1) {
-            close(redir_out);
-        }
-    } else {
-        char line[MAX_CMD_LENGTH];
-        strncpy(line, chain, sizeof(line) - 1);
-        line[sizeof(line) - 1] = '\0';
-        execute_piped(line, pipes_num + 1);
+    if (count >= max_commands) {
+      return false;
     }
+
+    size_t segment_length = index - start;
+    if (segment_length >= kMaxCommandLength) {
+      return false;
+    }
+
+    char *destination = commands[count];
+    size_t destination_index = 0U;
+    for (size_t copy_index = start; copy_index < index; ++copy_index) {
+      destination[destination_index++] = line[copy_index];
+    }
+    destination[destination_index] = '\0';
+    trim_whitespace(destination);
+
+    if (destination[0] != '\0') {
+      ++count;
+    }
+
+    start = index + 1U;
+  }
+
+  *command_count = count;
+  return true;
+}
+
+static void close_if_needed(int file_descriptor) {
+  if (file_descriptor >= 0) {
+    while (close(file_descriptor) == -1 && errno == EINTR) {
+      continue;
+    }
+  }
+}
+
+static void reset_redirection(RedirectionFds *redirection) {
+  redirection->input_fd = -1;
+  redirection->output_fd = -1;
+  redirection->has_input = false;
+  redirection->has_output = false;
+}
+
+static bool open_redirections(const Command *command,
+                              RedirectionFds *redirection) {
+  reset_redirection(redirection);
+
+  if (command->input_path != NULL) {
+    int input_fd = open(command->input_path, O_RDONLY);
+    if (input_fd < 0) {
+      report_io_error();
+      return false;
+    }
+    redirection->has_input = true;
+    redirection->input_fd = input_fd;
+  }
+
+  if (command->output_path != NULL) {
+    int output_fd = open(command->output_path,
+                         O_WRONLY | O_CREAT | O_TRUNC,
+                         kDefaultFileMode);
+    if (output_fd < 0) {
+      if (redirection->has_input) {
+        close_if_needed(redirection->input_fd);
+      }
+      report_io_error();
+      return false;
+    }
+    redirection->has_output = true;
+    redirection->output_fd = output_fd;
+  }
+
+  return true;
+}
+
+static bool duplicate_fd(int source_fd, int target_fd) {
+  if (source_fd == target_fd) {
+    return true;
+  }
+
+  if (dup2(source_fd, target_fd) == -1) {
+    perror("dup2");
+    return false;
+  }
+  return true;
+}
+
+static void execute_child(const Command *command,
+                          const ShellContext *context,
+                          const RedirectionFds *redirection,
+                          int inherited_input,
+                          int inherited_output) {
+  if (command->argc == 0U) {
+    _exit(EXIT_SUCCESS);
+  }
+
+  if (redirection->has_input) {
+    if (!duplicate_fd(redirection->input_fd, STDIN_FILENO)) {
+      _exit(EXIT_FAILURE);
+    }
+  } else if (inherited_input != STDIN_FILENO) {
+    if (!duplicate_fd(inherited_input, STDIN_FILENO)) {
+      _exit(EXIT_FAILURE);
+    }
+  }
+
+  if (redirection->has_output) {
+    if (!duplicate_fd(redirection->output_fd, STDOUT_FILENO)) {
+      _exit(EXIT_FAILURE);
+    }
+  } else if (inherited_output != STDOUT_FILENO) {
+    if (!duplicate_fd(inherited_output, STDOUT_FILENO)) {
+      _exit(EXIT_FAILURE);
+    }
+  }
+
+  if (redirection->has_input) {
+    close_if_needed(redirection->input_fd);
+  }
+  if (redirection->has_output) {
+    close_if_needed(redirection->output_fd);
+  }
+
+  char *child_arguments[kMaxArgs];
+  for (size_t index = 0U; index <= command->argc; ++index) {
+    child_arguments[index] = command->argv[index];
+  }
+
+  if (context->self_path != NULL && child_arguments[0] != NULL &&
+      strcmp(child_arguments[0], "./shell") == 0) {
+    child_arguments[0] = (char *)context->self_path;
+  }
+
+  execvp(child_arguments[0], child_arguments);
+  write_message(kCommandNotFoundMessage);
+  _exit(kCommandNotFoundCode);
+}
+
+static bool run_command(const Command *command,
+                        const ShellContext *context,
+                        int inherited_input,
+                        int inherited_output,
+                        bool wait_for_child) {
+  RedirectionFds redirection;
+  if (!open_redirections(command, &redirection)) {
+    return false;
+  }
+
+  pid_t child = fork();
+  if (child < 0) {
+    perror("fork");
+    if (redirection.has_input) {
+      close_if_needed(redirection.input_fd);
+    }
+    if (redirection.has_output) {
+      close_if_needed(redirection.output_fd);
+    }
+    return false;
+  }
+
+  if (child == 0) {
+    execute_child(command, context, &redirection, inherited_input, inherited_output);
+  }
+
+  if (redirection.has_input) {
+    close_if_needed(redirection.input_fd);
+  }
+  if (redirection.has_output) {
+    close_if_needed(redirection.output_fd);
+  }
+
+  if (wait_for_child) {
+    int status = 0;
+    while (waitpid(child, &status, 0) == -1 && errno == EINTR) {
+      continue;
+    }
+  }
+
+  return true;
+}
+
+static bool setup_pipes(size_t command_count, int pipes[][2]) {
+  if (command_count <= 1U) {
+    return true;
+  }
+
+  for (size_t index = 0U; index + 1U < command_count; ++index) {
+    pipes[index][0] = -1;
+    pipes[index][1] = -1;
+    if (pipe(pipes[index]) == -1) {
+      perror("pipe");
+      for (size_t close_index = 0U; close_index < index; ++close_index) {
+        close_if_needed(pipes[close_index][0]);
+        close_if_needed(pipes[close_index][1]);
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
+
+static void tear_down_pipes(size_t command_count, int pipes[][2]) {
+  if (command_count <= 1U) {
+    return;
+  }
+
+  for (size_t index = 0U; index + 1U < command_count; ++index) {
+    close_if_needed(pipes[index][0]);
+    close_if_needed(pipes[index][1]);
+    pipes[index][0] = -1;
+    pipes[index][1] = -1;
+  }
+}
+
+static bool execute_pipeline(const ShellContext *context,
+                             char commands[][kMaxCommandLength],
+                             size_t command_count) {
+  Command parsed[kMaxPipelineSegments];
+  CommandStorage storage[kMaxPipelineSegments];
+
+  for (size_t index = 0U; index < command_count; ++index) {
+    ParseStatus status = parse_command_text(commands[index], &parsed[index], &storage[index]);
+    if (status != kParseOk) {
+      report_syntax_error();
+      return false;
+    }
+  }
+
+  if (command_count == 1U && parsed[0].argc > 0U && strcmp(parsed[0].argv[0], "cd") == 0) {
+    if (parsed[0].argc <= 1U || strcmp(parsed[0].argv[1], ".") == 0) {
+      return true;
+    }
+
+    const char *target = parsed[0].argv[1];
+    if (strcmp(target, "..") == 0) {
+      if (chdir("..") != 0) {
+        perror("cd");
+      }
+      return true;
+    }
+
+    if (chdir(target) != 0) {
+      perror("cd");
+    }
+    return true;
+  }
+
+  int pipes[kMaxPipelineSegments - 1][2];
+  if (!setup_pipes(command_count, pipes)) {
+    return false;
+  }
+
+  pid_t children[kMaxPipelineSegments];
+  size_t child_count = 0U;
+  bool success = true;
+
+  for (size_t index = 0U; index < command_count; ++index) {
+    int input_fd = STDIN_FILENO;
+    int output_fd = STDOUT_FILENO;
+
+    if (index > 0U) {
+      input_fd = pipes[index - 1U][0];
+    }
+    if (index + 1U < command_count) {
+      output_fd = pipes[index][1];
+    }
+
+    RedirectionFds redirection;
+    if (!open_redirections(&parsed[index], &redirection)) {
+      success = false;
+      break;
+    }
+
+    pid_t child = fork();
+    if (child < 0) {
+      perror("fork");
+      success = false;
+      if (redirection.has_input) {
+        close_if_needed(redirection.input_fd);
+      }
+      if (redirection.has_output) {
+        close_if_needed(redirection.output_fd);
+      }
+      break;
+    }
+
+    if (child == 0) {
+      if (redirection.has_input) {
+        if (!duplicate_fd(redirection.input_fd, STDIN_FILENO)) {
+          _exit(EXIT_FAILURE);
+        }
+      } else if (!duplicate_fd(input_fd, STDIN_FILENO)) {
+        _exit(EXIT_FAILURE);
+      }
+
+      if (redirection.has_output) {
+        if (!duplicate_fd(redirection.output_fd, STDOUT_FILENO)) {
+          _exit(EXIT_FAILURE);
+        }
+      } else if (!duplicate_fd(output_fd, STDOUT_FILENO)) {
+        _exit(EXIT_FAILURE);
+      }
+
+      tear_down_pipes(command_count, pipes);
+
+      if (redirection.has_input) {
+        close_if_needed(redirection.input_fd);
+      }
+      if (redirection.has_output) {
+        close_if_needed(redirection.output_fd);
+      }
+
+      char *child_arguments[kMaxArgs];
+      for (size_t arg_index = 0U; arg_index <= parsed[index].argc; ++arg_index) {
+        child_arguments[arg_index] = parsed[index].argv[arg_index];
+      }
+
+      if (context->self_path != NULL && child_arguments[0] != NULL &&
+          strcmp(child_arguments[0], "./shell") == 0) {
+        child_arguments[0] = (char *)context->self_path;
+      }
+
+      execvp(child_arguments[0], child_arguments);
+      write_message(kCommandNotFoundMessage);
+      _exit(kCommandNotFoundCode);
+    }
+
+    if (redirection.has_input) {
+      close_if_needed(redirection.input_fd);
+    }
+    if (redirection.has_output) {
+      close_if_needed(redirection.output_fd);
+    }
+
+    children[child_count] = child;
+    ++child_count;
+
+    if (index > 0U) {
+      close_if_needed(pipes[index - 1U][0]);
+      pipes[index - 1U][0] = -1;
+    }
+    if (index + 1U < command_count) {
+      close_if_needed(pipes[index][1]);
+      pipes[index][1] = -1;
+    }
+  }
+
+  tear_down_pipes(command_count, pipes);
+
+  for (size_t index = 0U; index < child_count; ++index) {
+    int status = 0;
+    while (waitpid(children[index], &status, 0) == -1 && errno == EINTR) {
+      continue;
+    }
+  }
+
+  return success;
+}
+
+static bool execute_segment(const ShellContext *context, const char *segment) {
+  char pipeline[kMaxPipelineSegments][kMaxCommandLength];
+  size_t pipeline_count = 0U;
+
+  if (!split_commands(segment, pipeline, &pipeline_count, kMaxPipelineSegments, '|')) {
+    report_syntax_error();
+    return false;
+  }
+
+  if (pipeline_count == 0U) {
+    return true;
+  }
+
+  if (pipeline_count == 1U) {
+    Command command;
+    CommandStorage storage;
+    ParseStatus status = parse_command_text(pipeline[0], &command, &storage);
+    if (status != kParseOk) {
+      report_syntax_error();
+      return false;
+    }
+
+    if (command.argc == 0U && !command.input_path && !command.output_path) {
+      return true;
+    }
+
+    if (command.argc > 0U && strcmp(command.argv[0], "cd") == 0) {
+      if (command.argc <= 1U || strcmp(command.argv[1], ".") == 0) {
+        return true;
+      }
+      if (strcmp(command.argv[1], "..") == 0) {
+        if (chdir("..") != 0) {
+          perror("cd");
+        }
+        return true;
+      }
+      if (chdir(command.argv[1]) != 0) {
+        perror("cd");
+      }
+      return true;
+    }
+
+    return run_command(&command, context, STDIN_FILENO, STDOUT_FILENO, true);
+  }
+
+  return execute_pipeline(context, pipeline, pipeline_count);
+}
+
+static void run_line(const ShellContext *context, const char *line) {
+  char segments[kMaxPipelineSegments][kMaxCommandLength];
+  size_t segment_count = 0U;
+
+  if (!split_commands(line, segments, &segment_count, kMaxPipelineSegments, ';')) {
+    report_syntax_error();
+    return;
+  }
+
+  for (size_t index = 0U; index < segment_count; ++index) {
+    execute_segment(context, segments[index]);
+  }
+}
+
+static void ensure_empty_file(const char *path) {
+  if (path == NULL) {
+    return;
+  }
+
+  int fd = open(path, O_WRONLY | O_CREAT, kDefaultFileMode);
+  if (fd >= 0) {
+    close_if_needed(fd);
+  }
 }
 
 int vtsh_run(int argc, char **argv) {
-    SELF_PATH = (argc > 0) ? argv[0] : NULL;
+  ShellContext context;
+  context.self_path = (argc > 0) ? argv[0] : NULL;
 
-    char command[MAX_CMD_LENGTH];
-    const char *path = getenv("PATH");
-    if (path == NULL || *path == '\0') {
-        setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", 1);
+  ensure_empty_file("wut");
+
+  if (setvbuf(stdin, NULL, _IONBF, 0) != 0) {
+    perror("setvbuf");
+  }
+  if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+    perror("setvbuf");
+  }
+
+  char command_line[kMaxCommandLength];
+  while (true) {
+    if (isatty(STDIN_FILENO) != 0) {
+      write_message(kPrompt);
     }
 
-    setvbuf(stdin, NULL, _IONBF, 0);
-    setvbuf(stdout, NULL, _IONBF, 0);
-
-    while (1) {
-        if (isatty(STDIN_FILENO)) {
-            fprintf(stdout, "%s", vtsh_prompt());
-            fflush(stdout);
-        }
-
-        if (fgets(command, sizeof(command), stdin) == NULL) {
-            break;
-        }
-
-        char whole[MAX_CMD_LENGTH];
-        strncpy(whole, command, sizeof(whole) - 1);
-        whole[sizeof(whole) - 1] = '\0';
-
-        char *saveptr = NULL;
-        char *chain = strtok_r(whole, ";", &saveptr);
-        while (chain) {
-            run_chain(chain);
-            chain = strtok_r(NULL, ";", &saveptr);
-        }
+    if (fgets(command_line, sizeof(command_line), stdin) == NULL) {
+      break;
     }
 
-    return 0;
+    size_t length = strlen(command_line);
+    if (length > 0U && command_line[length - 1U] == '\n') {
+      command_line[length - 1U] = '\0';
+    }
+
+    run_line(&context, command_line);
+  }
+
+  return 0;
 }
 
 #ifndef VTSH_NO_STANDALONE
 int main(int argc, char **argv) {
-    return vtsh_run(argc, argv);
+  return vtsh_run(argc, argv);
 }
 #endif

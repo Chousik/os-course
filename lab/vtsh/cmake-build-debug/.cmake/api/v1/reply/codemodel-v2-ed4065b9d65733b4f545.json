@@ -9,7 +9,8 @@
 					"childIndexes" : 
 					[
 						1,
-						2
+						2,
+						3
 					],
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
@@ -31,7 +32,7 @@
 					"source" : "bin",
 					"targetIndexes" : 
 					[
-						1
+						4
 					]
 				},
 				{
@@ -48,6 +49,23 @@
 					[
 						0
 					]
+				},
+				{
+					"build" : "loaders",
+					"jsonFile" : "directory-loaders-Debug-be94071213e4ae7f93c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "loaders",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						3
+					]
 				}
 			],
 			"name" : "Debug",
@@ -58,13 +76,17 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3
 					],
 					"name" : "vtsh",
 					"targetIndexes" : 
 					[
 						0,
-						1
+						1,
+						2,
+						3,
+						4
 					]
 				}
 			],
@@ -73,8 +95,29 @@
 				{
 					"directoryIndex" : 2,
 					"id" : "libvtsh::@306ed2d68c6501e8728f",
-					"jsonFile" : "target-libvtsh-Debug-52df9b1ab7ebeb4ae6f1.json",
+					"jsonFile" : "target-libvtsh-Debug-767387bad784f26eeda0.json",
 					"name" : "libvtsh",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "loader_cpu_dedup::@6fd7edca71a0f56f28ce",
+					"jsonFile" : "target-loader_cpu_dedup-Debug-f4e8cbb68c3ae369d0bb.json",
+					"name" : "loader_cpu_dedup",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "loader_ema_replace_str::@6fd7edca71a0f56f28ce",
+					"jsonFile" : "target-loader_ema_replace_str-Debug-d4d2e28bdc4dfeeed1df.json",
+					"name" : "loader_ema_replace_str",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "loader_io_rw::@6fd7edca71a0f56f28ce",
+					"jsonFile" : "target-loader_io_rw-Debug-43e65632fbba01f8492b.json",
+					"name" : "loader_io_rw",
 					"projectIndex" : 0
 				},
 				{
