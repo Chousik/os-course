@@ -3,3 +3,7 @@
 68	101	1759698430380900282	bin/vtsh	3f52085276f358e8
 34	62	1759698430346672371	lib/liblibvtsh.a	11bb384daec7f637
 1	68	1759698430314019293	bin/CMakeFiles/vtsh.dir/main.c.o	b4aff9ca92f19287
+6	284	1759710638917045464	loaders/CMakeFiles/loader_cpu_dedup.dir/cpu_dedup.c.o	b7250f665498c1a6
+284	484	1759710639194825472	loaders/loader_cpu_dedup	e2570f1ccdab5af4
+1	57	1759710664745996833	loaders/CMakeFiles/loader_ema_replace_str.dir/ema_replace_str.c.o	d67e82df632a1d4f
+58	106	1759710664802528151	loaders/loader_ema_replace_str	64173041fe7d3abd
