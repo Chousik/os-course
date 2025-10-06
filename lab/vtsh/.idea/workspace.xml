@@ -3,9 +3,9 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeProjectFlavorService">
     <option name="flavorId" value="CMakePlainProjectFlavor" />
   </component>
@@ -43,9 +43,9 @@
     <option name="minorVersion" value="2.3" />
     <option name="productBranch" value="Classic" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="33fBQz4AhG9G7auCcRtLJGfftX1" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -59,6 +59,7 @@
     "Python tests.Python tests for test_basics.TestShellBasics.test_empty_command.executor": "Run",
     "Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction.executor": "Run",
     "Python tests.Python tests for test_redirection.TestShellRedirection.executor": "Run",
+    "Python tests.Python tests in test_basics.py.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
@@ -82,7 +83,7 @@
       <recent name="$PROJECT_DIR$/build/bin" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction">
+  <component name="RunManager" selected="Python tests.Python tests for test_redirection.TestShellRedirection">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
@@ -97,21 +98,6 @@
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
-    </configuration>
-    <configuration name="Python tests for base_test.BaseShellTest" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="vtsh" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;base_test.BaseShellTest&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
     </configuration>
     <configuration name="Python tests for test_basics.TestShellBasics" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="vtsh" />
@@ -173,10 +159,25 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in test_basics.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="vtsh" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/test/test_basics.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="CMake Application.vtsh" />
       <item itemvalue="CMake Application.libvtsh" />
-      <item itemvalue="Python tests.Python tests for base_test.BaseShellTest" />
+      <item itemvalue="Python tests.Python tests in test_basics.py" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
@@ -184,11 +185,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
+        <item itemvalue="Python tests.Python tests in test_basics.py" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
-        <item itemvalue="Python tests.Python tests for base_test.BaseShellTest" />
-        <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
       </list>
     </recent_temporary>
   </component>

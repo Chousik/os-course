@@ -14,12 +14,9 @@
 #define PIPE_ERROR "Pipe creation failed"
 #define DUP2_STDIN_ERROR "dup2(stdin) failed"
 #define DUP2_STDOUT_ERROR "dup2(stdout) failed"
+#define INVITED "vtsh> "
 
 static const char *SELF_PATH = NULL;
-
-const char* vtsh_prompt(void) {
-    return "vtsh> ";
-}
 
 static void trim_spaces(char *s) {
     if (!s) {
@@ -485,7 +482,7 @@ int vtsh_run(int argc, char **argv) {
 
     while (1) {
         if (isatty(STDIN_FILENO)) {
-            fprintf(stdout, "%s", vtsh_prompt());
+            fprintf(stdout, "%s", INVITED);
             fflush(stdout);
         }
 
@@ -507,9 +504,3 @@ int vtsh_run(int argc, char **argv) {
 
     return 0;
 }
-
-#ifndef VTSH_NO_STANDALONE
-int main(int argc, char **argv) {
-    return vtsh_run(argc, argv);
-}
-#endif
