@@ -9,6 +9,5 @@ project(
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_subdirectory(bin)
-add_subdirectory(lib)
+add_subdirectory(vtpc)
 add_subdirectory(loaders)

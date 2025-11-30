@@ -1,3 +1,5 @@
+#include "ema_replace.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -119,7 +121,10 @@ static int generate_file(const struct options *opts, size_t needle_len) {
     return 0;
 }
 
-static size_t replace_in_file(int fd, const struct options *opts, size_t needle_len) {
+static size_t replace_in_file(int fd,
+                              const struct options *opts,
+                              size_t needle_len,
+                              const struct ema_io_iface *iface) {
     size_t buffer_size = opts->buffer_size;
     if (buffer_size < needle_len) {
         buffer_size = needle_len;
@@ -136,7 +141,7 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
     size_t replacements = 0;
 
     for (;;) {
-        ssize_t rd = pread(fd, buffer + tail, buffer_size, offset);
+        ssize_t rd = iface->pread(fd, buffer + tail, buffer_size, offset);
         if (rd < 0) {
             perror("pread");
             break;
@@ -152,7 +157,7 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
         for (size_t pos = 0; pos < limit; ++pos) {
             if (buffer[pos] == opts->needle[0] && memcmp(buffer + pos, opts->needle, needle_len) == 0) {
                 off_t target = base_offset + (off_t)pos;
-                ssize_t wr = pwrite(fd, opts->replacement, needle_len, target);
+                ssize_t wr = iface->pwrite(fd, opts->replacement, needle_len, target);
                 if (wr < 0) {
                     perror("pwrite");
                     free(buffer);
@@ -175,8 +180,8 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
         offset += (off_t)chunk;
     }
 
-    if (opts->do_fsync) {
-        if (fsync(fd) != 0) {
+    if (opts->do_fsync && iface->fsync) {
+        if (iface->fsync(fd) != 0) {
             perror("fsync");
         }
     }
@@ -185,7 +190,7 @@ static size_t replace_in_file(int fd, const struct options *opts, size_t needle_
     return replacements;
 }
 
-int main(int argc, char **argv) {
+int ema_replace_main(const struct ema_io_iface *iface, int argc, char **argv) {
     struct options opts = {
         .file_path = NULL,
         .needle = NULL,
@@ -324,7 +329,12 @@ int main(int argc, char **argv) {
         }
     }
 
-    int fd = open(opts.file_path, O_RDWR);
+    if (!iface || !iface->open || !iface->close || !iface->pread || !iface->pwrite || !iface->lseek) {
+        fprintf(stderr, "Invalid IO interface provided.\n");
+        return EXIT_FAILURE;
+    }
+
+    int fd = iface->open(opts.file_path, O_RDWR);
     if (fd < 0) {
         perror("open");
         return EXIT_FAILURE;
@@ -335,7 +345,7 @@ int main(int argc, char **argv) {
     size_t max_repl = 0;
 
     for (size_t iter = 0; iter < opts.repeat; ++iter) {
-        size_t replaced = replace_in_file(fd, &opts, needle_len);
+        size_t replaced = replace_in_file(fd, &opts, needle_len, iface);
         total_replacements += replaced;
         if (replaced < min_repl) {
             min_repl = replaced;
@@ -343,14 +353,14 @@ int main(int argc, char **argv) {
         if (replaced > max_repl) {
             max_repl = replaced;
         }
-        if (lseek(fd, 0, SEEK_SET) < 0) {
+        if (iface->lseek(fd, 0, SEEK_SET) < 0) {
             perror("lseek");
-            close(fd);
+            iface->close(fd);
             return EXIT_FAILURE;
         }
     }
 
-    close(fd);
+    iface->close(fd);
 
     if (min_repl == SIZE_MAX) {
         min_repl = 0;

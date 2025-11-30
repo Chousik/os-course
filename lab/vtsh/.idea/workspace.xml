@@ -26,7 +26,21 @@
   <component name="ChangeListManager">
     <list default="true" id="cf089157-a333-4855-a39c-48882f0405b3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_redirection.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_redirection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/vtsh.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/vtsh.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/loaders/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/loaders/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loaders/cpu_dedup.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/loaders/ema_replace_str.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/loaders/io_load.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/base_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/shell.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_basics.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_redirection.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +84,7 @@
     "cf.advertisement.text.overridden": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "ready",
+    "git-widget-placeholder": "lab2",
     "last_opened_file_path": "/Users/chousik/CLionProjects/os-course/lab/vtsh",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -87,6 +101,11 @@
     </key>
   </component>
   <component name="RunManager" selected="Python tests.Python tests for test_redirection.TestShellRedirection">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="libvtsh" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtsh" TARGET_NAME="libvtsh" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -201,7 +220,7 @@
       <updated>1759698233545</updated>
       <workItem from="1759698234636" duration="5479000" />
       <workItem from="1762606679437" duration="2000" />
-      <workItem from="1764527229842" duration="317000" />
+      <workItem from="1764527229842" duration="2473000" />
     </task>
     <servers />
   </component>
