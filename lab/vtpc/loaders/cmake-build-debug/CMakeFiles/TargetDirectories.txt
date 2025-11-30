@@ -1,0 +1,4 @@
+/Users/chousik/CLionProjects/os-course/lab/vtpc/loaders/cmake-build-debug/CMakeFiles/loader_ema_replace_orig.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/loaders/cmake-build-debug/CMakeFiles/loader_ema_replace_vtpc.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/loaders/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/loaders/cmake-build-debug/CMakeFiles/rebuild_cache.dir

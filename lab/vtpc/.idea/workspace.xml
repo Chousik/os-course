@@ -14,11 +14,8 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="vtpc" targetName="test_basic" />
-      <config projectName="vtpc" targetName="test_random" />
-      <config projectName="vtpc" targetName="vt" />
-      <config projectName="vtpc" targetName="vtpc" />
-      <config projectName="vtpc" targetName="test_seq" />
+      <config projectName="Project" targetName="loader_ema_replace_vtpc" />
+      <config projectName="Project" targetName="loader_ema_replace_orig" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -28,11 +25,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf089157-a333-4855-a39c-48882f0405b3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/vtpc.c" beforeDir="false" afterPath="$PROJECT_DIR$/lib/vtpc.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_basic.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_basic.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_random.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_random.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_seq.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_seq.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/cmakeFiles-v1-ceb7cb0896d69062d611.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2025-11-30T19-40-42-0718.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/build.ninja" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/build.ninja" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,9 +67,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "CMake Application.loader_ema_replace_vtpc.executor": "Run",
     "CMake Application.test_basic.executor": "Run",
     "CMake Application.test_random.executor": "Run",
     "CMake Application.vtsh.executor": "Run",
+    "CMake Debug.Project.executor": "Debug",
     "Python tests.Python tests for base_test.BaseShellTest.executor": "Run",
     "Python tests.Python tests for test_basics.TestShellBasics.executor": "Run",
     "Python tests.Python tests for test_basics.TestShellBasics.test_empty_command.executor": "Run",
@@ -99,35 +101,29 @@
       <recent name="$PROJECT_DIR$/build/bin" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.test_random">
+  <component name="RunManager" selected="CMake Debug.Project">
+    <configuration name="Project" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="test_basic" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="test_basic" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtpc" RUN_TARGET_NAME="test_basic">
+    <configuration name="loader_ema_replace_orig" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="loader_ema_replace_orig" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="loader_ema_replace_orig">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="test_random" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="test_random" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtpc" RUN_TARGET_NAME="test_random">
+    <configuration name="loader_ema_replace_vtpc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="loader_ema_replace_vtpc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="loader_ema_replace_vtpc">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="test_seq" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="test_seq" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="vtpc" RUN_TARGET_NAME="test_seq">
+    <configuration name="ema_replace_vtpc.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="ema_replace_vtpc.c" CONFIG_NAME="ema_replace_vtpc.c">
+      <option name="sourceFile" value="loaders/ema_replace_vtpc.c" />
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="vt" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="vt" CONFIG_NAME="Debug">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="vtpc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="vtpc" TARGET_NAME="vtpc" CONFIG_NAME="Debug">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="Python tests for test_basics.TestShellBasics" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -142,21 +138,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_basics.TestShellBasics&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for test_basics.TestShellBasics.test_empty_command" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="vtsh" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_basics.TestShellBasics.test_empty_command&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -206,24 +187,22 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="CMake Application.vtpc" />
-      <item itemvalue="CMake Application.test_basic" />
-      <item itemvalue="CMake Application.test_random" />
-      <item itemvalue="CMake Application.test_seq" />
-      <item itemvalue="CMake Application.vt" />
+      <item itemvalue="C/C++ File.ema_replace_vtpc.c" />
+      <item itemvalue="CMake Application.loader_ema_replace_orig" />
+      <item itemvalue="CMake Application.loader_ema_replace_vtpc" />
+      <item itemvalue="CMake Debug.Project" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
-      <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
       <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
       <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
       <item itemvalue="Python tests.Python tests in test_basics.py" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="CMake Debug.Project" />
         <item itemvalue="Python tests.Python tests for test_redirection.TestShellRedirection" />
         <item itemvalue="Python tests.Python tests in test_basics.py" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_stdin_interaction" />
         <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics" />
-        <item itemvalue="Python tests.Python tests for test_basics.TestShellBasics.test_empty_command" />
       </list>
     </recent_temporary>
   </component>
@@ -238,7 +217,7 @@
       <workItem from="1759698234636" duration="5479000" />
       <workItem from="1762606679437" duration="2000" />
       <workItem from="1764527229842" duration="3387000" />
-      <workItem from="1764531641893" duration="502000" />
+      <workItem from="1764531641893" duration="2187000" />
     </task>
     <servers />
   </component>
