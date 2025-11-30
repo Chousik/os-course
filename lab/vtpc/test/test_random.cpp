@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
-#include "cmp_file.hpp"
-#include "file.hpp"
-#include "log_file.hpp"
+#include "lib/cmp_file.hpp"
+#include "lib/file.hpp"
+#include "lib/log_file.hpp"
 
 auto main() -> int try {
   constexpr size_t seed = 1;

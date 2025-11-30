@@ -1,8 +1,0 @@
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/bin/CMakeFiles/vtsh.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/bin/CMakeFiles/edit_cache.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/bin/CMakeFiles/rebuild_cache.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/lib/CMakeFiles/libvtsh.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/lib/CMakeFiles/edit_cache.dir
-/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug/lib/CMakeFiles/rebuild_cache.dir

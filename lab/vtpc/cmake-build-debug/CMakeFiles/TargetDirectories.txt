@@ -1,0 +1,13 @@
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/lib/CMakeFiles/vtpc.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/lib/CMakeFiles/edit_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/lib/CMakeFiles/rebuild_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/CMakeFiles/test_basic.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/CMakeFiles/test_seq.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/CMakeFiles/test_random.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/CMakeFiles/edit_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/CMakeFiles/rebuild_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/lib/CMakeFiles/vt.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/lib/CMakeFiles/edit_cache.dir
+/Users/chousik/CLionProjects/os-course/lab/vtpc/cmake-build-debug/test/lib/CMakeFiles/rebuild_cache.dir

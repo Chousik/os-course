@@ -5,8 +5,8 @@
 #include <string>
 #include <utility>
 
-#include "cmp_file.hpp"
-#include "file.hpp"
+#include "lib/cmp_file.hpp"
+#include "lib/file.hpp"
 
 auto main() -> int try {
   constexpr size_t count = 1024;

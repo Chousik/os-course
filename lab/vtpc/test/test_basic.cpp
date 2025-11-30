@@ -3,8 +3,8 @@
 #include <memory>
 #include <utility>
 
-#include "cmp_file.hpp"
-#include "file.hpp"
+#include "lib/cmp_file.hpp"
+#include "lib/file.hpp"
 
 auto main() -> int try {
   auto libc = vt::file::open_libc("/tmp/a");

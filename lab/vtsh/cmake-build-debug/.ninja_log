@@ -1,5 +1,0 @@
-# ninja log v6
-1	34	1759698430313737835	lib/CMakeFiles/libvtsh.dir/vtsh.c.o	fa7be204fa8b8359
-68	101	1759698430380900282	bin/vtsh	3f52085276f358e8
-34	62	1759698430346672371	lib/liblibvtsh.a	11bb384daec7f637
-1	68	1759698430314019293	bin/CMakeFiles/vtsh.dir/main.c.o	b4aff9ca92f19287

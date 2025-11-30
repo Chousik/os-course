@@ -1,0 +1,12 @@
+# ninja log v6
+1	124	1764532122202521869	lib/CMakeFiles/vtpc.dir/vtpc.c.o	70a26061e11abfc8
+126	199	1764532122327074661	lib/libvtpc.a	321777f2869989d5
+2	648	1764532122203494823	test/lib/CMakeFiles/vt.dir/log_file.cpp.o	6ef0f01b999b43ae
+2	650	1764532122203743072	test/CMakeFiles/test_basic.dir/test_basic.cpp.o	4ef7d7c44b22080e
+2	652	1764532122202985742	test/lib/CMakeFiles/vt.dir/cmp_file.cpp.o	4e5043ec43e83dbd
+2	673	1764532122203181366	test/lib/CMakeFiles/vt.dir/exception.cpp.o	f299e05f17334531
+2	898	1764532122203340865	test/lib/CMakeFiles/vt.dir/file.cpp.o	d67e11f6e462a0c4
+898	940	1764532123099758814	test/lib/libvt.a	d6ec6f9ce685f461
+940	988	1764532123141499230	test/test_basic	2b89c545576d6f08
+5	566	1764532129521082322	test/CMakeFiles/test_random.dir/test_random.cpp.o	67a7887440bf6270
+566	614	1764532130082402864	test/test_random	651337d5bd0eb2c5
