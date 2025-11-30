@@ -3,7 +3,7 @@ name: Test VT Page Cache
 on:
   push:
     branches:
-      - main
+      - lab2
   pull_request:
     paths:
       - 'lab/vtpc/**'
