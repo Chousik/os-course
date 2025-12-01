@@ -1,0 +1,38 @@
+[
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -I/Users/chousik/CLionProjects/os-course/lab/vtsh/bin/. -I/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/. -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o bin/CMakeFiles/vtsh.dir/main.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/bin/main.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/bin/main.c",
+  "output": "bin/CMakeFiles/vtsh.dir/main.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -DVTSH_NO_STANDALONE=1 -I/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/. -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o lib/CMakeFiles/libvtsh.dir/vtsh.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/lib/vtsh.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/vtsh.c",
+  "output": "lib/CMakeFiles/libvtsh.dir/vtsh.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -DVTSH_NO_STANDALONE=1 -I/Users/chousik/CLionProjects/os-course/lab/vtsh/lib/. -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o lib/CMakeFiles/libvtsh.dir/__/loaders/io_load.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/io_load.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/io_load.c",
+  "output": "lib/CMakeFiles/libvtsh.dir/__/loaders/io_load.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -g -std=c11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o loaders/CMakeFiles/loader_cpu_dedup.dir/cpu_dedup.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/cpu_dedup.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/cpu_dedup.c",
+  "output": "loaders/CMakeFiles/loader_cpu_dedup.dir/cpu_dedup.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -g -std=c11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o loaders/CMakeFiles/loader_ema_replace_str.dir/ema_replace_str.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/ema_replace_str.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/ema_replace_str.c",
+  "output": "loaders/CMakeFiles/loader_ema_replace_str.dir/ema_replace_str.c.o"
+},
+{
+  "directory": "/Users/chousik/CLionProjects/os-course/lab/vtsh/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc -g -std=c11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -o loaders/CMakeFiles/loader_io_rw.dir/io_load.c.o -c /Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/io_load.c",
+  "file": "/Users/chousik/CLionProjects/os-course/lab/vtsh/loaders/io_load.c",
+  "output": "loaders/CMakeFiles/loader_io_rw.dir/io_load.c.o"
+}
+]
